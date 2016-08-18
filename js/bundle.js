@@ -66,7 +66,66 @@
 	  this.$el = $el;
 	  this.board = new Board();
 	  this.currentView();
+	  this.bindKey();
+	  setInterval(() => {
+	    this.step();
+	  }, 200);
 	}
+
+	SnakeView.prototype.updateSnake = function() {
+	  let snakeArr = this.board.snake.segments;
+	  this.board.$grid.children().children().removeClass('snake');
+	  this.board.$grid.children().children().each (function() {
+	    let gridPos = $(this).data("pos");
+	    snakeArr.forEach(el => {
+	      let snakeArrStr = el.join(',');
+	      if (snakeArrStr === gridPos) {
+	        $(this).addClass('snake');
+	      }
+	    });
+	  });
+	};
+
+	SnakeView.prototype.bindKey = function() {
+	  $(document).on("keydown", event => {
+	    switch(event.which) {
+	      case 37: //left
+	        if (!(this.board.snake.direction === "E")) {
+	          this.board.snake.turn("W");
+	        }
+	      break;
+
+	      case 38: //up
+	        if (!(this.board.snake.direction === "S")) {
+	          this.board.snake.turn("N");
+	        }
+	      break;
+
+	      case 39: //right
+	        if (!(this.board.snake.direction === "W")) {
+	          this.board.snake.turn("E");
+	        }
+	      break;
+
+	      case 40: //down
+	        if (!(this.board.snake.direction === "N")) {
+	          this.board.snake.turn("S");
+	        }
+	      break;
+
+	      default: return;
+	    }
+	  });
+	};
+
+
+
+
+	SnakeView.prototype.step = function () {
+	  console.log('logging here!');
+	  this.board.snake.move();
+	  this.updateSnake();
+	};
 
 
 
@@ -83,27 +142,12 @@
 
 	const Snake = __webpack_require__(3);
 
-	function Board(snake) {
+	function Board() {
 	  this.snake = new Snake();
 	  this.$grid = $("<div>");
 	  this.setupBoard();
-	  this.updateSnake();
 	}
 
-	Board.prototype.updateSnake = function() {
-	  let snakeArr = this.snake.segments;
-	  this.$grid.children().children().each (function() {
-
-	    let gridPos = $(this).data("pos");
-	    $(this).removeClass('snake');
-	    snakeArr.forEach(el => {
-	      let snakeArrStr = el.join(',');
-	      if (snakeArrStr === gridPos) {
-	        $(this).addClass('snake');
-	      }
-	    });
-	  });
-	};
 
 	Board.prototype.setupBoard = function() {
 	  for(let i = 0; i < 20; i ++) {
@@ -139,19 +183,17 @@
 	};
 
 	Snake.prototype.move = function() {
+	  let headCol = this.segments[0][0];
+	  let headRow = this.segments[0][1];
 	  this.segments.pop();
-
-	  let headX = this.segments[0][0];
-	  let headY = this.segments[0][1];
-
 	  if (this.direction === "N") {
-	    this.segments.unshift([headX, headY - 1]);
+	    this.segments.unshift([headCol - 1, headRow]);
 	  } else if (this.direction === "S") {
-	    this.segments.unshift([headX, headY + 1]);
+	    this.segments.unshift([headCol + 1, headRow]);
 	  } else if (this.direction === "E") {
-	    this.segments.unshift([headX + 1, headY]);
+	    this.segments.unshift([headCol , headRow + 1]);
 	  } else if (this.direction === "W") {
-	    this.segments.unshift([headX - 1, headY]);
+	    this.segments.unshift([headCol, headRow - 1]);
 	  }
 	};
 

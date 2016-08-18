@@ -1,26 +1,11 @@
 const Snake = require('./snake');
 
-function Board(snake) {
+function Board() {
   this.snake = new Snake();
   this.$grid = $("<div>");
   this.setupBoard();
-  this.updateSnake();
 }
 
-Board.prototype.updateSnake = function() {
-  let snakeArr = this.snake.segments;
-  this.$grid.children().children().each (function() {
-
-    let gridPos = $(this).data("pos");
-    $(this).removeClass('snake');
-    snakeArr.forEach(el => {
-      let snakeArrStr = el.join(',');
-      if (snakeArrStr === gridPos) {
-        $(this).addClass('snake');
-      }
-    });
-  });
-};
 
 Board.prototype.setupBoard = function() {
   for(let i = 0; i < 20; i ++) {
